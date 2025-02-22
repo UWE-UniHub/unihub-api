@@ -42,7 +42,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'communities',
+    'events',
+    'posts',
+    'profiles',
+    'unihub_app',
 ]
+
+AUTH_USER_MODEL = 'profiles.Profile'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
