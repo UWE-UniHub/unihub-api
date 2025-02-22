@@ -33,6 +33,10 @@ class Profile(AbstractUser):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} ({self.email})"
+    
+    @property
+    def followers(self):
+        return self.followers.all()
 
 class ProfileSubscription(models.Model):
     subscriber = models.ForeignKey(Profile, related_name="following", on_delete=models.CASCADE)
