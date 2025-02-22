@@ -1,11 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import RegexValidator
 
 class Profile(AbstractUser):
-    id = models.PositiveIntegerField(
+    id = models.CharField(
         primary_key=True,
-        validators=[MinValueValidator(10000000), MaxValueValidator(99999999)],
+        max_length=8,
+        validators=[RegexValidator(r'^\d{8}$', 'ID must be an 8-digit number.')],
         unique=True
     )
     bio = models.TextField(blank=True)
@@ -33,11 +34,7 @@ class Profile(AbstractUser):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} ({self.email})"
-    
-    @property
-    def followers(self):
-        return self.followers.all()
-
+   
 class ProfileSubscription(models.Model):
     subscriber = models.ForeignKey(Profile, related_name="following", on_delete=models.CASCADE)
     subscribed_to = models.ForeignKey(Profile, related_name="followers", on_delete=models.CASCADE)
