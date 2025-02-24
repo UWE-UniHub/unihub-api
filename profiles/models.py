@@ -10,11 +10,17 @@ class Profile(AbstractUser):
         unique=True
     )
     bio = models.TextField(blank=True)
+
     username = None
+    email = None
     is_staff = models.BooleanField(default=False)
+
+    # student
     program = models.CharField(max_length=255, blank=True, null=True)
     level = models.CharField(max_length=255, blank=True, null=True)
     school = models.CharField(max_length=255, blank=True, null=True)
+
+    # staff
     position = models.CharField(max_length=255, blank=True, null=True)
     department = models.CharField(max_length=255, blank=True, null=True)
 
@@ -28,7 +34,6 @@ class Profile(AbstractUser):
 
     created_at = models.DateTimeField(auto_now_add=True)
 
-    email = models.EmailField(unique=True)
     USERNAME_FIELD = 'id'
     REQUIRED_FIELDS = []
 
