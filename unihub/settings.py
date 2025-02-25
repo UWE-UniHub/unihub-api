@@ -125,6 +125,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+ALLOWED_HOSTS = [
+    'uwe.dyzoon.dev'
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
