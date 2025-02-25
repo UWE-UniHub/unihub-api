@@ -1,2 +1,2 @@
 django
-environ
+django-environ
