@@ -126,7 +126,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 ALLOWED_HOSTS = [
-    'uwe.dyzoon.dev'
+    'uwe.dyzoon.dev',
+    '127.0.0.1'
 ]
 
 # Internationalization
