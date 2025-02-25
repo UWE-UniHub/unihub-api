@@ -61,3 +61,25 @@ def signup_view(request):
         return Response({"message": "User registered successfully"}, status=status.HTTP_201_CREATED)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+def logout_view(request):
+    token = request.COOKIES.get("token")
+    
+    if not token:
+        token = request.headers.get("token")
+
+    if not token:
+        return Response({"error": "No token provided"}, status=status.HTTP_401_UNAUTHORIZED)
+
+    try:
+
+        token_obj = Token.objects.get(key=token)
+        token_obj.delete()
+        
+        response = Response({"message": "Logged out successfully"}, status=status.HTTP_200_OK)
+        response.delete_cookie("token")
+        
+        return response
+    except Token.DoesNotExist:
+        return Response({"error": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
