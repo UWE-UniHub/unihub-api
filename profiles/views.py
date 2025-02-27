@@ -29,7 +29,7 @@ def profile_detail(request, id):
         if error_response:
             return error_response
         
-        if user_id != id:
+        if int(user_id) != id:
             return Response({"error": "You are not allowed to perform this action."}, status=status.HTTP_403_FORBIDDEN)
 
     if request.method == 'GET':
