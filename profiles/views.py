@@ -34,32 +34,3 @@ def delete_profile(request, id):
     
     except Profile.DoesNotExist:
         return Response({"error": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
-
-@api_view(['GET'])
-def get_school_info(request):
-    data = {
-        "programs": [
-            {"name": "Computer Science"},
-            {"name": "Data Science"},
-            {"name": "Potions Making"},
-        ],
-        "levels": [
-            {"name": "Bachelor"},
-            {"name": "Master"}
-        ],
-        "schools": [
-            {"name": "Engineering"},
-            {"name": "Education"},
-            {"name": "Laws"},
-            {"name": "Science"}
-        ],
-        "positions": [
-            {"name": "Student"},
-            {"name": "Researcher"}
-        ],
-        "departments": [
-            {"name": "IT"},
-            {"name": "Data Analytics"}
-        ]
-    }
-    return Response(data, status=status.HTTP_200_OK)
