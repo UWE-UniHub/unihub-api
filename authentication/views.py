@@ -10,6 +10,12 @@ from .serializers import RegisterSerializer
 from profiles.serializers import ProfileSerializer
 
 @api_view(['GET'])
+def list_all_tokens(request):
+    tokens = Token.objects.all()
+    token_list = [{"user_id": token.user_id, "key": token.key} for token in tokens]
+    return Response(token_list, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
 def auth_check(request):
     token = request.COOKIES.get("token")
 
