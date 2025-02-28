@@ -23,7 +23,7 @@ def profile_detail(request, id):
     profile = get_object_or_404(Profile, id=id)
 
     if request.method in ['PATCH', 'DELETE']:
-        user, error_response = get_user_from_request(request)
+        user, error_response = get_user_id_from_token(request)
         if error_response:
             return error_response
         
