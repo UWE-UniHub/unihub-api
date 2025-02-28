@@ -16,11 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from authentication.views import list_all_tokens
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('authentication.urls')),
     path('profiles/', include('profiles.urls')),
-    path('tokens/', list_all_tokens, name='list_all_tokens'),
 ]
