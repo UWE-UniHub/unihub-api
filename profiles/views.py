@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
 from rest_framework.authtoken.models import Token
 
-def get_user_from_request(request):
+def get_user_id_from_token(request):
     token = request.COOKIES.get("token")
 
     if not token:
@@ -23,7 +23,7 @@ def profile_detail(request, id):
     profile = get_object_or_404(Profile, id=id)
 
     if request.method in ['PATCH', 'DELETE']:
-        user, error_response = get_user_from_request(request)
+        user, error_response = get_user_id_from_token(request)
         if error_response:
             return error_response
         
@@ -47,3 +47,35 @@ def profile_detail(request, id):
         profile.delete()
         return Response({"message": "Profile deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
     
+@api_view(['GET'])
+def profile_followers(request, id):
+    profile = get_object_or_404(Profile, id=id)
+    subscribers = profile.subscribers.all()
+    serializer = ProfileSerializer(subscribers, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def profile_subscriptions(request, id):
+    profile = get_object_or_404(Profile, id=id)
+    subscriptions = profile.subscriptions.all()
+    serializer = ProfileSerializer(subscriptions, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['POST', 'DELETE'])
+def add_delete_prof_subs(request, id):
+    profile = get_object_or_404(Profile, id=id)
+    user_id, error_response = get_user_id_from_token(request)
+    user_id = user_id.id
+    
+    if error_response:
+        return error_response
+    
+    if request.method == 'POST':
+        subscriber = get_object_or_404(Profile, id=user_id)
+        profile.subscribers.add(subscriber)
+        return Response({"message": "Subscribed successfully"}, status=status.HTTP_201_CREATED)
+    
+    elif request.method == 'DELETE':
+        subscriber = get_object_or_404(Profile, id=user_id)
+        profile.subscribers.remove(subscriber)
+        return Response({"message": "Unsubscribed successfully"}, status=status.HTTP_204_NO_CONTENT)
