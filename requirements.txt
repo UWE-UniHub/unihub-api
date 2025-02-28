@@ -2,3 +2,4 @@ django
 django-environ
 djangorestframework
 psycopg2
+django-cors-headers
