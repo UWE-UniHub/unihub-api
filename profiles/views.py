@@ -1,3 +1,49 @@
-from django.shortcuts import render
+from .models import Profile
+from .serializers import ProfileSerializer
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.decorators import api_view
+from django.shortcuts import get_object_or_404
+from rest_framework.authtoken.models import Token
 
-# Create your views here.
+def get_user_from_request(request):
+    token = request.COOKIES.get("token")
+
+    if not token:
+        return None, Response({"error": "No token provided"}, status=status.HTTP_401_UNAUTHORIZED)
+
+    try:
+        user = Token.objects.get(key=token).user
+        return user, None
+    except Token.DoesNotExist:
+        return None, Response({"error": "Invalid token"}, status=status.HTTP_401_UNAUTHORIZED)
+
+@api_view(['GET', 'PATCH', 'DELETE'])
+def profile_detail(request, id):
+    profile = get_object_or_404(Profile, id=id)
+
+    if request.method in ['PATCH', 'DELETE']:
+        user, error_response = get_user_from_request(request)
+        if error_response:
+            return error_response
+        
+        if not user or user.id != profile.id:
+            return Response({"error": "You are not allowed to perform this action."}, status=status.HTTP_403_FORBIDDEN)
+
+    if request.method == 'GET':
+        serializer = ProfileSerializer(profile)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    elif request.method == 'PATCH':
+        serializer = ProfileSerializer(profile, data=request.data, partial=True)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    elif request.method == 'DELETE':
+        profile.delete()
+        return Response({"message": "Profile deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+    
