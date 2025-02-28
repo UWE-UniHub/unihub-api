@@ -6,17 +6,15 @@ from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
 from rest_framework.authtoken.models import Token
 
-def get_user_id_from_token(request):
+def get_user_from_request(request):
     token = request.COOKIES.get("token")
-    if not token:
-        token = request.headers.get("token")
-    
+
     if not token:
         return None, Response({"error": "No token provided"}, status=status.HTTP_401_UNAUTHORIZED)
-    
+
     try:
         user = Token.objects.get(key=token).user
-        return user.id, None
+        return user, None
     except Token.DoesNotExist:
         return None, Response({"error": "Invalid token"}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -25,11 +23,11 @@ def profile_detail(request, id):
     profile = get_object_or_404(Profile, id=id)
 
     if request.method in ['PATCH', 'DELETE']:
-        user_id, error_response = get_user_id_from_token(request)
+        user, error_response = get_user_from_request(request)
         if error_response:
             return error_response
         
-        if int(user_id) != id:
+        if not user or user.id != profile.id:
             return Response({"error": "You are not allowed to perform this action."}, status=status.HTTP_403_FORBIDDEN)
 
     if request.method == 'GET':
@@ -41,7 +39,7 @@ def profile_detail(request, id):
         
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
