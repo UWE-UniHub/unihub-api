@@ -28,7 +28,6 @@ def communitiesGetPost(request):
         user, error_response = get_user_from_token(request)
         if error_response:
             return error_response
-        #request.data['creator_id'] = user.id
         serializer = CommunityPostSerializer(data=request.data)
         if serializer.is_valid():
             serializer.validated_data['creator_id'] = user.id
@@ -38,4 +37,29 @@ def communitiesGetPost(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return  Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-#@api_view(['PATCH','DELETE'])
+@api_view(['GET','PATCH','DELETE'])
+def communitiesGetPatchDelete(request,id):
+    community = get_object_or_404(Community, id = id)
+    if request.method =='GET':
+        serializer = CommunitySerializer(community)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    else:
+        user, error_response = get_user_from_token(request)
+        if error_response:
+            return error_response
+        
+        if not community.admins.contains(user):
+            return Response({"error": "You are not allowed to perform this action."}, status=status.HTTP_403_FORBIDDEN)
+        
+        if request.method =='PATCH':
+            serializer = CommunitySerializer(community, data=request.data, partial=True)
+        
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        else:
+            community.delete()
+            return Response({"message": "Community deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
