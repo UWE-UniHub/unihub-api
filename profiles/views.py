@@ -1,3 +1,6 @@
+import os
+from django.conf import settings
+from django.http import FileResponse
 from .models import Profile
 from .serializers import ProfileSerializer
 from rest_framework.response import Response
@@ -5,6 +8,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
 from rest_framework.authtoken.models import Token
+
+AVATAR_DIR = os.path.join(settings.MEDIA_ROOT, 'profiles')
 
 def get_user_id_from_token(request):
     token = request.COOKIES.get("token")
@@ -46,7 +51,36 @@ def profile_detail(request, id):
     elif request.method == 'DELETE':
         profile.delete()
         return Response({"message": "Profile deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
-    
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def profile_avatar(request, id):
+    profile = get_object_or_404(Profile, id=id)
+    avatar_path = os.path.join(AVATAR_DIR, f"{id}.png")
+    print(f"Avatar path: {avatar_path}")
+
+    if request.method in ['PUT', 'DELETE']:
+        user, error_response = get_user_id_from_token(request)
+        if error_response:
+            return error_response
+        
+        if not user or user.id != profile.id:
+            return Response({"error": "You are not allowed to perform this action."}, status=status.HTTP_403_FORBIDDEN)
+
+    if request.method == 'GET':
+        if os.path.exists(avatar_path):
+            return FileResponse(open(avatar_path, 'rb'), content_type='image/png')
+        return Response({"error": "Avatar not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    elif request.method == 'PUT':
+        with open(avatar_path, 'wb') as f:
+            f.write(request.body)
+        return Response({"message": "Avatar uploaded successfully"}, status=status.HTTP_200_OK)
+
+    elif request.method == 'DELETE':
+        if os.path.exists(avatar_path):
+            os.remove(avatar_path)
+            return Response({"message": "Avatar deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"error": "Avatar not found"}, status=status.HTTP_404_NOT_FOUND)    
 @api_view(['GET'])
 def profile_followers(request, id):
     profile = get_object_or_404(Profile, id=id)

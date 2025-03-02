@@ -1,4 +1,7 @@
 *.pyc
 __pycache__/
 
+media/profiles/*.png
+media/communities/*.png
+
 .env
