@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
 from rest_framework.authtoken.models import Token
 
-def get_user_id_from_token(request):
+def get_user_from_token(request):
     token = request.COOKIES.get("token")
 
     if not token:
@@ -23,7 +23,7 @@ def profile_detail(request, id):
     profile = get_object_or_404(Profile, id=id)
 
     if request.method in ['PATCH', 'DELETE']:
-        user, error_response = get_user_id_from_token(request)
+        user, error_response = get_user_from_token(request)
         if error_response:
             return error_response
         
@@ -64,18 +64,18 @@ def profile_subscriptions(request, id):
 @api_view(['POST', 'DELETE'])
 def add_delete_prof_subs(request, id):
     profile = get_object_or_404(Profile, id=id)
-    user_id, error_response = get_user_id_from_token(request)
-    user_id = user_id.id
+    user, error_response = get_user_from_token(request)
+    user = user.id
     
     if error_response:
         return error_response
     
     if request.method == 'POST':
-        subscriber = get_object_or_404(Profile, id=user_id)
+        subscriber = get_object_or_404(Profile, id=user)
         profile.subscribers.add(subscriber)
         return Response({"message": "Subscribed successfully"}, status=status.HTTP_201_CREATED)
     
     elif request.method == 'DELETE':
-        subscriber = get_object_or_404(Profile, id=user_id)
+        subscriber = get_object_or_404(Profile, id=user)
         profile.subscribers.remove(subscriber)
         return Response({"message": "Unsubscribed successfully"}, status=status.HTTP_204_NO_CONTENT)

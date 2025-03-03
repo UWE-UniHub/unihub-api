@@ -1,5 +1,6 @@
 from .models import Community
 from .serializers import CommunitySerializer, CommunityPostSerializer
+from profiles.serializers import ProfileSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -63,3 +64,27 @@ def communitiesGetPatchDelete(request,id):
         else:
             community.delete()
             return Response({"message": "Community deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['GET'])
+def community_subscribers(request,id):
+    community = get_object_or_404(Community, id=id)
+    subscribers = community.subscribers.all()
+    serializer = ProfileSerializer(subscribers, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['POST','DELETE'])
+def add_delete_comm_subs(request,id):
+    community = get_object_or_404(Community, id=id)
+    user, error_response = get_user_from_token(request)
+
+    if error_response:
+        return error_response
+    
+    user = user.id
+
+    if request.method == 'POST':
+        community.subscribers.add(user)
+        return Response({"message": "Subscribed successfully"}, status=status.HTTP_200_OK)
+    else:
+        community.subscribers.remove(user)
+        return Response({"message": "Unsubscribed successfully"}, status=status.HTTP_200_OK)
