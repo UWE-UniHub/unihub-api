@@ -2,7 +2,7 @@ import uuid
 from django.db import models
 
 class Community(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.CharField(primary_key=True, max_length=255)
     name = models.CharField(max_length=255)
     bio = models.TextField(blank=True)
     creator = models.ForeignKey('profiles.Profile', on_delete=models.CASCADE, related_name='created_communities')
