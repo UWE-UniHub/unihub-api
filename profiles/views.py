@@ -108,11 +108,11 @@ def add_delete_prof_subs(request, id):
         return error_response
     
     if request.method == 'POST':
-        subscriber = get_object_or_404(Profile, id=user)
+        subscriber = get_object_or_404(Profile, id=user_id)
         profile.subscribers.add(subscriber)
         return Response({"message": "Subscribed successfully"}, status=status.HTTP_201_CREATED)
     
     elif request.method == 'DELETE':
-        subscriber = get_object_or_404(Profile, id=user)
+        subscriber = get_object_or_404(Profile, id=user_id)
         profile.subscribers.remove(subscriber)
         return Response({"message": "Unsubscribed successfully"}, status=status.HTTP_204_NO_CONTENT)
