@@ -100,6 +100,7 @@ def profile_subscriptions(request, id):
 @api_view(['POST', 'DELETE'])
 def add_delete_prof_subs(request, id):
     profile = get_object_or_404(Profile, id=id)
+    
     user_id, error_response = get_user_from_request(request)
     user_id = user_id.id
     
