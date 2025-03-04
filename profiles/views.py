@@ -1,3 +1,6 @@
+import os
+from django.conf import settings
+from django.http import FileResponse
 from .models import Profile
 from .serializers import ProfileSerializer
 from rest_framework.response import Response
@@ -6,7 +9,9 @@ from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
 from rest_framework.authtoken.models import Token
 
-def get_user_from_token(request):
+AVATAR_DIR = os.path.join(settings.MEDIA_ROOT, 'profiles')
+
+def get_user_from_request(request):
     token = request.COOKIES.get("token")
 
     if not token:
@@ -23,7 +28,7 @@ def profile_detail(request, id):
     profile = get_object_or_404(Profile, id=id)
 
     if request.method in ['PATCH', 'DELETE']:
-        user, error_response = get_user_from_token(request)
+        user, error_response = get_user_from_request(request)
         if error_response:
             return error_response
         
@@ -64,7 +69,7 @@ def profile_subscriptions(request, id):
 @api_view(['POST', 'DELETE'])
 def add_delete_prof_subs(request, id):
     profile = get_object_or_404(Profile, id=id)
-    user, error_response = get_user_from_token(request)
+    user, error_response = get_user_from_request(request)
     user = user.id
     
     if error_response:
