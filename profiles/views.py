@@ -53,8 +53,6 @@ def profile_detail(request, id):
 def profile_avatar(request, id):
     profile = get_object_or_404(Profile, id=id)
     avatar_path = os.path.join(AVATAR_DIR, f"{id}.png")
-    print(f"Avatar path: {avatar_path}")
-
     if request.method in ['PUT', 'DELETE']:
         user, error_response = get_user_from_request(request)
         if error_response:
