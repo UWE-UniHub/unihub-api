@@ -1,6 +1,6 @@
 import os
 from django.conf import settings
-from django.http import FileResponse, JsonResponse
+from django.http import FileResponse
 from .models import Community
 from profiles.models import Profile
 from .serializers import CommunitySerializer, CommunityPostSerializer, CommunityDetailSerializer
@@ -10,8 +10,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
 from rest_framework.authtoken.models import Token
-
-COMMUNITY_AVATAR_DIR = os.path.join(settings.MEDIA_ROOT, 'communities')
+from profiles.views import get_user_from_request
+from unihub.settings import COMMUNITY_AVATAR_DIR
 
 def check_user_is_admin(user, community):
     return community.admins.filter(id=user.id).exists()
@@ -19,22 +19,10 @@ def check_user_is_admin(user, community):
 def check_user_is_creator(user, community):
     return community.creator == user
 
-def get_user_from_token(request):
-    token = request.COOKIES.get("token")
-
-    if not token:
-        return None, Response({"error": "No token provided"}, status=status.HTTP_401_UNAUTHORIZED)
-
-    try:
-        user = Token.objects.get(key=token).user
-        return user, None
-    except Token.DoesNotExist:
-        return None, Response({"error": "Invalid token"}, status=status.HTTP_401_UNAUTHORIZED)
-
 @api_view(['GET','POST'])
 def communitiesGetPost(request):   
 
-    user, error_response = get_user_from_token(request)
+    user, error_response = get_user_from_request(request)
 
     if request.method == 'GET':
         serializer = CommunitySerializer(Community.objects.all(),many=True)
@@ -63,7 +51,7 @@ def communitiesGetPatchDelete(request,id):
         serializer = CommunityDetailSerializer(community, context={'request': request, 'user': request.user})
         return Response(serializer.data, status=status.HTTP_200_OK)
     
-    user, error_response = get_user_from_token(request)
+    user, error_response = get_user_from_request(request)
     if error_response:
         return error_response
         
@@ -96,7 +84,7 @@ def community_subscribers(request,id):
 @api_view(['POST','DELETE'])
 def add_delete_comm_subs(request,id):
     community = get_object_or_404(Community, id=id)
-    user, error_response = get_user_from_token(request)
+    user, error_response = get_user_from_request(request)
 
     if error_response:
         return error_response
@@ -116,7 +104,7 @@ def community_avatar(request, id):
     avatar_path = os.path.join(COMMUNITY_AVATAR_DIR, f"{community.id}.png")
 
     if request.method in ['PUT', 'DELETE']:
-        user, error_response = get_user_from_token(request)
+        user, error_response = get_user_from_request(request)
         if error_response:
             return error_response
         if not check_user_is_admin(user, community) and not check_user_is_creator(user, community):
@@ -155,7 +143,7 @@ def community_admins(request, id):
 @api_view(['POST', 'DELETE'])
 def add_delete_admin(request, community_id, admin_id):
     community = get_object_or_404(Community, id=community_id)
-    user, error_response = get_user_from_token(request)
+    user, error_response = get_user_from_request(request)
 
     if error_response:
         return error_response
@@ -172,3 +160,20 @@ def add_delete_admin(request, community_id, admin_id):
         delete_admin = get_object_or_404(Profile, id=admin_id)
         community.admins.remove(delete_admin)
         return Response({"message": "Admin removed successfully"}, status=status.HTTP_200_OK)
+
+@api_view(['GET', 'POST'])
+def community_posts(request, id): #needs to be finished
+    community = get_object_or_404(Community, id=id)
+
+    if request.method == 'GET':
+        return 0
+    user, error_response = get_user_from_request(request)
+    
+    if error_response:
+        return error_response
+
+    if request.method == 'POST':
+        if not check_user_is_creator(user, community) and not check_user_is_admin(user, community):
+            return Response({"error": "You are not allowed to perform this action."}, status=status.HTTP_403_FORBIDDEN)
+        
+        return 0

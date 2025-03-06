@@ -38,6 +38,7 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 AVATAR_DIR = os.path.join(MEDIA_ROOT, 'profiles')
 COMMUNITY_AVATAR_DIR = os.path.join(MEDIA_ROOT, 'communities')
+POST_AVATAR_DIR = os.path.join(MEDIA_ROOT, 'posts')
 
 os.makedirs(AVATAR_DIR, exist_ok=True)
 

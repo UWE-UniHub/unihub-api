@@ -8,8 +8,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
 from rest_framework.authtoken.models import Token
-
-AVATAR_DIR = os.path.join(settings.MEDIA_ROOT, 'profiles')
+from unihub.settings import AVATAR_DIR
 
 def get_user_from_request(request):
     token = request.COOKIES.get("token")

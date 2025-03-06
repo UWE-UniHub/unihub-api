@@ -34,7 +34,7 @@ class CommunityDetailSerializer(CommunitySerializer):
         token = request.COOKIES.get('token')
         user = Token.objects.get(key=token).user
         if user and user.is_authenticated:
-            return obj.creator == user  # Сравнение двух Profile
+            return obj.creator == user
         return False
 
 

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import communitiesGetPost, communitiesGetPatchDelete, community_subscribers, add_delete_comm_subs, community_avatar, add_delete_admin, community_admins
+from .views import communitiesGetPost, communitiesGetPatchDelete, community_subscribers, add_delete_comm_subs, community_avatar, add_delete_admin, community_admins, community_posts
 
 urlpatterns = [
     path('', communitiesGetPost, name='communitiesGetPost'),
@@ -9,4 +9,5 @@ urlpatterns = [
     path('/<str:id>/avatar', community_avatar, name='community_avatar'),
     path('/<str:id>/admins', community_admins, name='community_admins'),
     path('/<str:community_id>/admins/<int:admin_id>', add_delete_admin, name='admin_community'),
+    path('/<str:id>/posts', community_posts, name='community_posts'),
 ]
