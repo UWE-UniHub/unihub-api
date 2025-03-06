@@ -1,6 +1,7 @@
 import os
 from django.conf import settings
 from django.http import FileResponse
+from unihub.utils import validate_png
 from .models import Community
 from profiles.models import Profile
 from .serializers import CommunitySerializer, CommunityPostSerializer, CommunityDetailSerializer
@@ -118,6 +119,11 @@ def community_avatar(request, id):
     elif request.method == 'PUT':
         if not request.body:
             return Response({"error": "No file uploaded"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        is_png, error_message = validate_png(request.body)
+        if not is_png:
+            return Response({"error": error_message}, status=status.HTTP_400_BAD_REQUEST)
+        
         try:
             with open(avatar_path, 'wb') as f:
                 f.write(request.body)
