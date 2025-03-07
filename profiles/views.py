@@ -3,7 +3,7 @@ from django.conf import settings
 from django.http import FileResponse
 from unihub.utils import validate_png
 from .models import Profile
-from .serializers import ProfileSerializer
+from .serializers import ProfileSerializer, ProfileDetailSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -34,7 +34,7 @@ def profile_detail(request, id):
             return Response({"error": "You are not allowed to perform this action."}, status=status.HTTP_403_FORBIDDEN)
 
     if request.method == 'GET':
-        serializer = ProfileSerializer(profile)
+        serializer = ProfileDetailSerializer(profile, context={'request': request, 'user': request.user})
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     elif request.method == 'PATCH':
