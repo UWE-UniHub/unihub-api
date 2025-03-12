@@ -1,15 +1,18 @@
 from rest_framework import serializers
 from profiles.models import Profile
+from rest_framework.authtoken.models import Token
+from communities.serializers import serializers_get_user_from_request
 
 class ProfileSerializer(serializers.ModelSerializer):
     subscribers = serializers.SerializerMethodField()
     subscriptions = serializers.SerializerMethodField()
     student = serializers.SerializerMethodField()
     staff = serializers.SerializerMethodField()
+    is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
         model = Profile
-        fields = ['id', 'first_name', 'last_name', 'bio', 'is_staff', 'subscribers', 'subscriptions', 'student', 'staff']
+        fields = ['id', 'first_name', 'last_name', 'bio', 'is_staff', 'subscribers', 'subscriptions', 'student', 'staff', 'is_subscribed']
 
     def get_subscribers(self, obj):
         return obj.subscribers.count()
@@ -33,3 +36,13 @@ class ProfileSerializer(serializers.ModelSerializer):
                 "department": obj.department
             }
         return None
+    
+class ProfileDetailSerializer(ProfileSerializer):
+    is_subscribed = serializers.SerializerMethodField()
+
+    class Meta(ProfileSerializer.Meta):
+        fields = ProfileSerializer.Meta.fields + ['is_subscribed']
+
+    def get_is_subscribed(self, obj):
+        user = serializers_get_user_from_request(self)
+        return user.is_authenticated and obj.subscribers.filter(id=user.id).exists() if user else False
