@@ -4,8 +4,19 @@ from rest_framework.authtoken.models import Token
 
 def serializers_get_user_from_request(self):
     request = self.context.get('request')
+
+    if not request:
+        return None
+    
     token = request.COOKIES.get('token')
-    return Token.objects.get(key=token).user
+
+    if not token:
+        return None
+
+    try:
+        return Token.objects.get(key=token).user
+    except Token.DoesNotExist:
+        return None
 
 class CommunitySerializer(serializers.ModelSerializer):
     id = serializers.CharField(read_only=True)

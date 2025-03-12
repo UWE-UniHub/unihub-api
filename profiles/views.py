@@ -105,10 +105,11 @@ def add_delete_prof_subs(request, id):
     profile = get_object_or_404(Profile, id=id)
     
     user_id, error_response = get_user_from_request(request)
-    user_id = user_id.id
-    
+
     if error_response:
         return error_response
+    
+    user_id = user_id.id
     
     if request.method == 'POST':
         subscriber = get_object_or_404(Profile, id=user_id)

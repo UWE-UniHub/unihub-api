@@ -45,6 +45,4 @@ class ProfileDetailSerializer(ProfileSerializer):
 
     def get_is_subscribed(self, obj):
         user = serializers_get_user_from_request(self)
-        if user and user.is_authenticated:
-            return obj.subscribers.filter(id=user.id).exists()
-        return False
+        return user.is_authenticated and obj.subscribers.filter(id=user.id).exists() if user else False
