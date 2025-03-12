@@ -8,11 +8,10 @@ class ProfileSerializer(serializers.ModelSerializer):
     subscriptions = serializers.SerializerMethodField()
     student = serializers.SerializerMethodField()
     staff = serializers.SerializerMethodField()
-    is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
         model = Profile
-        fields = ['id', 'first_name', 'last_name', 'bio', 'is_staff', 'subscribers', 'subscriptions', 'student', 'staff', 'is_subscribed']
+        fields = ['id', 'first_name', 'last_name', 'bio', 'is_staff', 'subscribers', 'subscriptions', 'student', 'staff']
 
     def get_subscribers(self, obj):
         return obj.subscribers.count()
