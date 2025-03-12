@@ -1,26 +1,13 @@
 import os
-from django.conf import settings
 from django.http import FileResponse
-from unihub.utils import validate_png
+from unihub.utils import get_user_from_request, validate_png
 from .models import Profile
 from .serializers import ProfileSerializer, ProfileDetailSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
-from rest_framework.authtoken.models import Token
 from unihub.settings import AVATAR_DIR
-
-def get_user_from_request(request):
-    token = request.COOKIES.get("token")
-
-    if not token:
-        return None, Response({"error": "No token provided"}, status=status.HTTP_401_UNAUTHORIZED)
-    try:
-        user = Token.objects.get(key=token).user
-        return user, None
-    except Token.DoesNotExist:
-        return None, Response({"error": "Invalid token"}, status=status.HTTP_401_UNAUTHORIZED)
 
 @api_view(['GET', 'PATCH', 'DELETE'])
 def profile_detail(request, id):

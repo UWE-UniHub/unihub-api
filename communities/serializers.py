@@ -1,22 +1,6 @@
 from rest_framework import serializers
 from communities.models import Community
-from rest_framework.authtoken.models import Token
-
-def serializers_get_user_from_request(self):
-    request = self.context.get('request')
-
-    if not request:
-        return None
-    
-    token = request.COOKIES.get('token')
-
-    if not token:
-        return None
-
-    try:
-        return Token.objects.get(key=token).user
-    except Token.DoesNotExist:
-        return None
+from unihub.utils import serializers_get_user_from_request
 
 class CommunitySerializer(serializers.ModelSerializer):
     id = serializers.CharField(read_only=True)
