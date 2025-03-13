@@ -46,25 +46,27 @@ def eventsIdGetPatchDelete(request,id):
     return Response({"error": "You are not allowed to perform this action."}, status=status.HTTP_403_FORBIDDEN)
 
 @api_view(['GET','POST'])
-def eventsProfileIdGetPost(request,id):
+def eventsProfileIdGetPost(request, id):
+    profile = get_object_or_404(Profile, id=id)
 
-    profile = get_object_or_404(Profile, id = id)
     if request.method == 'GET':
-        serializer = EventSerializer(Event.objects.filter(creator = profile, community = None), many = True)
+        serializer = EventSerializer(Event.objects.filter(creator=profile, community=None), many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     user, error_response = get_user_from_request(request)
     if error_response:
         return error_response
 
-    serializer = EventPostSerializer(data=request.data)
+    if str(user.id) != str(id):
+        return Response({"error": "You are not allowed to perform this action."}, status=status.HTTP_403_FORBIDDEN)
 
+    serializer = EventPostSerializer(data=request.data)
     if serializer.is_valid():
         serializer.validated_data['creator_id'] = user.id
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
-    return  Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET','POST'])
 def eventsCommunityIdGetPost(request,id):
