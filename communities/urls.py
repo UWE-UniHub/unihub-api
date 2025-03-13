@@ -4,7 +4,7 @@ from .views import communitiesGetPost, communitiesGetPatchDelete, community_subs
 urlpatterns = [
     path('', communitiesGetPost, name='communitiesGetPost'),
     path('/<str:id>', communitiesGetPatchDelete, name='communitiesGetPatchDelete'),
-    path('/<str:id>/subscribers', community_subscribers, name='community_subscribers'),
+    path('/<str:id>/followers', community_subscribers, name='community_subscribers'),
     path('/<str:id>/follow', add_delete_comm_subs, name='add_delete_comm_subs'),
     path('/<str:id>/avatar', community_avatar, name='community_avatar'),
     path('/<str:id>/admins', community_admins, name='community_admins'),
