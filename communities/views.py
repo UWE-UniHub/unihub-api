@@ -17,7 +17,7 @@ from unihub.settings import COMMUNITY_AVATAR_DIR
 def check_user_is_admin(user, community):
     return community.admins.filter(id=user.id).exists()
 
-def check_user_is_creator(user, community):
+def check_user_is_community_creator(user, community):
     return community.creator == user
 
 @api_view(['GET','POST'])
@@ -57,7 +57,7 @@ def communitiesGetPatchDelete(request,id):
         return error_response
         
     if request.method =='PATCH':
-        if not check_user_is_admin(user, community) and not check_user_is_creator(user, community):
+        if not check_user_is_admin(user, community) and not check_user_is_community_creator(user, community):
             return Response({"error": "You are not allowed to perform this action."}, status=status.HTTP_403_FORBIDDEN)
         
         serializer = CommunitySerializer(community, data=request.data, partial=True)
@@ -69,8 +69,8 @@ def communitiesGetPatchDelete(request,id):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
     else:
-        if not check_user_is_creator(user, community):
-            return Response({"error": "You are not allowed to perform this actionnn."}, status=status.HTTP_403_FORBIDDEN)
+        if not check_user_is_community_creator(user, community):
+            return Response({"error": "You are not allowed to perform this action."}, status=status.HTTP_403_FORBIDDEN)
         
         community.delete()
         return Response({"message": "Community deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
@@ -108,7 +108,7 @@ def community_avatar(request, id):
         user, error_response = get_user_from_request(request)
         if error_response:
             return error_response
-        if not check_user_is_admin(user, community) and not check_user_is_creator(user, community):
+        if not check_user_is_admin(user, community) and not check_user_is_community_creator(user, community):
             return Response({"error": "You are not allowed to perform this action."}, status=status.HTTP_403_FORBIDDEN)
 
     if request.method == 'GET':
@@ -154,7 +154,7 @@ def add_delete_admin(request, community_id, admin_id):
     if error_response:
         return error_response
     
-    if not check_user_is_creator(user, community):
+    if not check_user_is_community_creator(user, community):
             return Response({"error": "You are not allowed to perform this action."}, status=status.HTTP_403_FORBIDDEN)
     
     if request.method == 'POST':
@@ -179,7 +179,7 @@ def community_posts(request, id): #needs to be finished
         return error_response
 
     if request.method == 'POST':
-        if not check_user_is_creator(user, community) and not check_user_is_admin(user, community):
+        if not check_user_is_community_creator(user, community) and not check_user_is_admin(user, community):
             return Response({"error": "You are not allowed to perform this action."}, status=status.HTTP_403_FORBIDDEN)
         
         return 0
