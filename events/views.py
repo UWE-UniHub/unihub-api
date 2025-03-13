@@ -1,7 +1,5 @@
 from communities.models import Community
 from profiles.models import Profile
-from communities.serializers import CommunitySerializer
-from profiles.serializers import ProfileSerializer
 from .models import Event
 from .serializers import EventPostSerializer, EventSerializer
 from rest_framework.response import Response

@@ -1,8 +1,7 @@
 from rest_framework import serializers
 from .models import Event
-from communities.serializers import CommunitySerializer , Community
-from profiles.serializers import ProfileSerializer , Profile
-from django.shortcuts import get_object_or_404
+from communities.serializers import CommunitySerializer
+from profiles.serializers import ProfileSerializer
 
 class EventSerializer(serializers.ModelSerializer):
     id = serializers.CharField(read_only=True)
