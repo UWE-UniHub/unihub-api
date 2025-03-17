@@ -92,7 +92,7 @@ def postsCommunityIdGetPost(request,id):
     return Response({"error": "You are not allowed to perform this action."}, status=status.HTTP_403_FORBIDDEN)
 
 @api_view(['GET', 'PUT', 'DELETE'])
-def post_img(request, id):
+def postIdImgGetPutDelete(request, id):
     post = get_object_or_404(Post, id=id)
     img_path = os.path.join(POSTS_IMG_DIR, f"{id}.png")
 
