@@ -36,11 +36,14 @@ APPEND_SLASH = False
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-AVATAR_DIR = os.path.join(MEDIA_ROOT, 'profiles')
+PROFILE_AVATAR_DIR = os.path.join(MEDIA_ROOT, 'profiles')
 COMMUNITY_AVATAR_DIR = os.path.join(MEDIA_ROOT, 'communities')
+POSTS_IMG_DIR = os.path.join(MEDIA_ROOT, 'posts')
 
-os.makedirs(AVATAR_DIR, exist_ok=True)
+
+os.makedirs(PROFILE_AVATAR_DIR, exist_ok=True)
 os.makedirs(COMMUNITY_AVATAR_DIR, exist_ok=True)
+os.makedirs(POSTS_IMG_DIR, exist_ok=True)
 
 # Application definition
 

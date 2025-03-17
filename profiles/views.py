@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
-from unihub.settings import AVATAR_DIR
+from unihub.settings import PROFILE_AVATAR_DIR
 
 @api_view(['GET', 'PATCH', 'DELETE'])
 def profile_detail(request, id):
@@ -39,7 +39,7 @@ def profile_detail(request, id):
 @api_view(['GET', 'PUT', 'DELETE'])
 def profile_avatar(request, id):
     profile = get_object_or_404(Profile, id=id)
-    avatar_path = os.path.join(AVATAR_DIR, f"{id}.png")
+    avatar_path = os.path.join(PROFILE_AVATAR_DIR, f"{id}.png")
     if request.method in ['PUT', 'DELETE']:
         user, error_response = get_user_from_request(request)
         if error_response:
