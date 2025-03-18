@@ -18,4 +18,4 @@ class PostSerializer(serializers.ModelSerializer):
 class PostPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ['content', 'event']
+        fields = ['content', 'event_id']

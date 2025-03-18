@@ -34,6 +34,7 @@ def postsIdGetPatchDelete(request,id):
         if request.method == 'PATCH':
             serializer = PostSerializer(post, data=request.data, partial=True)
             if serializer.is_valid():
+                serializer.validated_data["event_id"] = request.data["event_id"]
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
                 
@@ -61,6 +62,7 @@ def postsProfileIdGetPost(request, id):
     serializer = PostPostSerializer(data=request.data)
     if serializer.is_valid():
         serializer.validated_data['profile_id'] = user.id
+        serializer.validated_data["event_id"] = request.data["event_id"]
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
@@ -84,6 +86,7 @@ def postsCommunityIdGetPost(request,id):
 
         if serializer.is_valid():
             serializer.validated_data['community_id'] = id
+            serializer.validated_data["event_id"] = request.data["event_id"]
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
