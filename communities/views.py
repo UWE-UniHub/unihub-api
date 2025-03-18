@@ -166,20 +166,3 @@ def add_delete_admin(request, community_id, admin_id):
         delete_admin = get_object_or_404(Profile, id=admin_id)
         community.admins.remove(delete_admin)
         return Response({"message": "Admin removed successfully"}, status=status.HTTP_200_OK)
-
-@api_view(['GET', 'POST'])
-def community_posts(request, id): #needs to be finished
-    community = get_object_or_404(Community, id=id)
-
-    if request.method == 'GET':
-        return 0
-    user, error_response = get_user_from_request(request)
-    
-    if error_response:
-        return error_response
-
-    if request.method == 'POST':
-        if not check_user_is_community_creator(user, community) and not check_user_is_admin(user, community):
-            return Response({"error": "You are not allowed to perform this action."}, status=status.HTTP_403_FORBIDDEN)
-        
-        return 0
