@@ -14,3 +14,11 @@ class Post(models.Model):
     def clean(self):
         if (self.profile is None and self.community is None) or (self.profile is not None and self.community is not None):
             raise ValidationError("Post must have either a profile or a community author, but not both.")
+        
+class PostLikes(models.Model):
+    post = models.ForeignKey('Post', on_delete=models.CASCADE)
+    profile = models.ForeignKey('profiles.Profile', on_delete=models.CASCADE)
+    
+    class Meta:
+        unique_together = ('post','profile')
+        
