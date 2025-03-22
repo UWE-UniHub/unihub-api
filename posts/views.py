@@ -2,6 +2,7 @@ from .models import Post
 from communities.models import Community
 from profiles.models import Profile
 from .serializers import PostPostSerializer, PostSerializer
+from profiles.serializers import ProfileSerializer
 from rest_framework.response import Response
 from django.http import FileResponse
 from rest_framework import status
@@ -21,7 +22,7 @@ def postsIdGetPatchDelete(request,id):
     post = get_object_or_404(Post,id=id)
 
     if request.method == 'GET':
-        serializer = PostSerializer(post)
+        serializer = PostSerializer(post,context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 
@@ -49,7 +50,7 @@ def postsProfileIdGetPost(request, id):
     profile = get_object_or_404(Profile, id=id)
 
     if request.method == 'GET':
-        serializer = PostSerializer(Post.objects.filter(profile=profile), many=True)
+        serializer = PostSerializer(Post.objects.filter(profile=profile),context={'request': request}, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     user, error_response = get_user_from_request(request)
@@ -73,7 +74,7 @@ def postsCommunityIdGetPost(request,id):
 
     community = get_object_or_404(Community, id = id)
     if request.method == 'GET':
-        serializer = PostSerializer(Post.objects.filter(community = community), many = True)
+        serializer = PostSerializer(Post.objects.filter(community = community),context={'request': request}, many = True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     user, error_response = get_user_from_request(request)
@@ -131,3 +132,25 @@ def postIdImgGetPutDelete(request, id):
         return Response({"error": "Image not found"}, status=status.HTTP_404_NOT_FOUND)
 
     return Response({"error": "You are not allowed to perform this action."}, status=status.HTTP_403_FORBIDDEN)
+
+@api_view(['GET','POST','DELETE'])
+def postIdLikesGetPostDelete(request,id):
+    
+    post = get_object_or_404(Post, id=id)
+    
+    if request.method == 'GET':
+        likes = post.likes.all()
+        serializer = ProfileSerializer(likes,many = True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    user, error_response = get_user_from_request(request)
+    if error_response:
+        return error_response
+    user = get_object_or_404(Profile, id=user.id)
+    
+    if request.method == 'POST':
+        post.likes.add(user)
+        return Response({"message": "Liked successfully"}, status=status.HTTP_201_CREATED)
+    
+    post.likes.remove(user)
+    return Response({"message": "Unliked successfully"}, status=status.HTTP_204_NO_CONTENT)
