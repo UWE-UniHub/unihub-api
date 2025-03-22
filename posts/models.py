@@ -11,6 +11,13 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    likes = models.ManyToManyField(
+        'profiles.Profile',
+        through='PostLikes',
+        related_name='like_posts',
+        blank=True
+    )
+
     def clean(self):
         if (self.profile is None and self.community is None) or (self.profile is not None and self.community is not None):
             raise ValidationError("Post must have either a profile or a community author, but not both.")
