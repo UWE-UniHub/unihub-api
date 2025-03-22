@@ -170,6 +170,7 @@ def add_delete_admin(request, community_id, admin_id):
 @api_view(['GET'])
 def get_eligible_admins(request, id):
     community = get_object_or_404(Community, id=id)
-    possible_admins = Profile.objects.exclude(id__in=community.admins.all()).exclude(id=community.creator.id)
+    subscribers = community.subscribers.all()
+    possible_admins = subscribers.exclude(id__in=community.admins.all()).exclude(id=community.creator.id)
     admins_serializer = ProfileSerializer(possible_admins, many=True)
     return Response(admins_serializer.data, status=status.HTTP_200_OK)
