@@ -4,7 +4,7 @@ from django.db import models
 class Community(models.Model):
     id = models.CharField(primary_key=True, max_length=255)
     name = models.CharField(max_length=255)
-    bio = models.TextField(blank=True)
+    bio = models.TextField(null=True, blank=True)
     creator = models.ForeignKey('profiles.Profile', on_delete=models.CASCADE, related_name='created_communities')
 
     subscribers = models.ManyToManyField(
