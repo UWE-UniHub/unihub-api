@@ -9,9 +9,13 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
 from profiles.views import get_user_from_request, validate_png
-from communities.views import check_user_is_admin, check_user_is_community_creator
+from rest_framework.pagination import LimitOffsetPagination
 from unihub.settings import POSTS_IMG_DIR
 import os
+
+class FeedPagination(LimitOffsetPagination):
+    default_limit = 10  # Количество объектов на странице по умолчанию
+    max_limit = 100
 
 @api_view(['GET'])
 def feed(request):
@@ -25,5 +29,7 @@ def feed(request):
         posts = Post.objects.filter(Q(profile__in=subscribed_profiles) | Q(community__in=subscribed_communities))
     
     posts = posts.order_by('-created_at')
-    serializer = PostSerializer(posts, many=True)
+    paginator = FeedPagination()
+    paginated_posts = paginator.paginate_queryset(posts, request)
+    serializer = PostSerializer(paginated_posts, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
