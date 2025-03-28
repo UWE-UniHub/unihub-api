@@ -32,4 +32,4 @@ def feed(request):
     paginator = FeedPagination()
     paginated_posts = paginator.paginate_queryset(posts, request)
     serializer = PostSerializer(paginated_posts, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)
+    return paginator.get_paginated_response(serializer.data)
