@@ -50,7 +50,7 @@ def postsProfileIdGetPost(request, id):
     profile = get_object_or_404(Profile, id=id)
 
     if request.method == 'GET':
-        serializer = PostSerializer(Post.objects.filter(profile=profile),context={'request': request}, many=True)
+        serializer = PostSerializer((Post.objects.filter(profile=profile).order_by('-created_at')),context={'request': request}, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     user, error_response = get_user_from_request(request)
@@ -73,7 +73,7 @@ def postsCommunityIdGetPost(request,id):
 
     community = get_object_or_404(Community, id = id)
     if request.method == 'GET':
-        serializer = PostSerializer(Post.objects.filter(community = community),context={'request': request}, many = True)
+        serializer = PostSerializer((Post.objects.filter(community = community).order_by('-created_at')) ,context={'request': request}, many = True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     user, error_response = get_user_from_request(request)
