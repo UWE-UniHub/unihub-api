@@ -62,10 +62,9 @@ def postsProfileIdGetPost(request, id):
 
     serializer = PostPostSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.validated_data['profile_id'] = user.id
-        serializer.validated_data["event_id"] = request.data["event_id"]
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        instance = serializer.save(profile_id=user.id, event_id=request.data["event_id"])
+        full_serializer = PostSerializer(instance, context={'request': request})
+        return Response(full_serializer.data, status=status.HTTP_201_CREATED)
     
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -82,15 +81,12 @@ def postsCommunityIdGetPost(request,id):
         return error_response
     
     if check_user_is_community_creator(user, community) or check_user_is_admin(user, community):
-
         serializer = PostPostSerializer(data=request.data)
 
         if serializer.is_valid():
-            serializer.validated_data['community_id'] = id
-            serializer.validated_data["event_id"] = request.data["event_id"]
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
+            instance = serializer.save(community_id=id, event_id=request.data["event_id"])
+            full_serializer = PostSerializer(instance, context={'request': request})
+            return Response(full_serializer.data, status=status.HTTP_201_CREATED)
         return  Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     return Response({"error": "You are not allowed to perform this action."}, status=status.HTTP_403_FORBIDDEN)
