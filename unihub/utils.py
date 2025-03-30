@@ -3,6 +3,21 @@ from io import BytesIO
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
+
+class FreemiumPagination(PageNumberPagination):
+    default_limit = 10
+    page_query_param = 'page'
+
+    def get_paginated_response(self, data):
+        return Response({
+            'count': self.page.paginator.count,  # Общее количество объектов
+            'total_pages': self.page.paginator.num_pages,  # Общее количество страниц
+            'current_page': self.page.number,  # Текущий номер страницы
+            'next_page': self.page.next_page_number() if self.page.has_next() else None,  # Номер следующей страницы
+            'previous_page': self.page.previous_page_number() if self.page.has_previous() else None,  # Номер предыдущей страницы
+            'results': data,
+        })
 
 def validate_png(file_bytes):
     try:
