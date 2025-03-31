@@ -12,6 +12,8 @@ from profiles.views import get_user_from_request, validate_png
 from communities.views import check_user_is_admin, check_user_is_community_creator
 from unihub.settings import POSTS_IMG_DIR
 import os
+from rest_framework.pagination import PageNumberPagination
+from unihub.utils import FreemiumPagination
 
 def check_user_can_pD_posts(user,post):
     return post.profile == user if post.profile else check_user_is_admin(user,post.community) or check_user_is_community_creator(user,post.community)
@@ -50,8 +52,11 @@ def postsProfileIdGetPost(request, id):
     profile = get_object_or_404(Profile, id=id)
 
     if request.method == 'GET':
-        serializer = PostSerializer((Post.objects.filter(profile=profile).order_by('-created_at')),context={'request': request}, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        posts = Post.objects.filter(profile=profile).order_by('-created_at')
+        paginator = FreemiumPagination()
+        paginated_posts = paginator.paginate_queryset(posts, request)
+        serializer = PostSerializer(paginated_posts, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     user, error_response = get_user_from_request(request)
     if error_response:
@@ -73,8 +78,11 @@ def postsCommunityIdGetPost(request,id):
 
     community = get_object_or_404(Community, id = id)
     if request.method == 'GET':
-        serializer = PostSerializer((Post.objects.filter(community = community).order_by('-created_at')) ,context={'request': request}, many = True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        posts = Post.objects.filter(community=community).order_by('-created_at')
+        paginator = FreemiumPagination()
+        paginated_posts = paginator.paginate_queryset(posts, request)
+        serializer = PostSerializer(paginated_posts, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     user, error_response = get_user_from_request(request)
     if error_response:

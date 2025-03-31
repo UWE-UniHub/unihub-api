@@ -111,7 +111,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
     ),
     'DEFAULT_PAGINATION_CLASS': 'unihub.utils.FreemiumPagination',
-     'PAGE_SIZE': 10,
+    'PAGE_SIZE': 10,
 }
 
 # Database
