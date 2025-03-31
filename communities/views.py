@@ -1,5 +1,4 @@
 import os
-from django.conf import settings
 from django.http import FileResponse
 from unihub.utils import validate_png
 from .models import Community
@@ -10,7 +9,6 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
-from rest_framework.authtoken.models import Token
 from profiles.views import get_user_from_request
 from unihub.settings import COMMUNITY_AVATAR_DIR
 
