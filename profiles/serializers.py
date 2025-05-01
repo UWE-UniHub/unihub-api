@@ -11,7 +11,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ['id', 'first_name', 'last_name', 'bio', 'is_staff', 'subscribers', 'subscriptions', 'student', 'staff']
+        fields = ['id', 'first_name', 'last_name', 'email', 'address', 'date_of_birth', 'interests', 'bio', 'is_staff', 'subscribers', 'subscriptions', 'student', 'staff']
 
     def get_subscribers(self, obj):
         return obj.subscribers.count()
@@ -23,7 +23,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         if not obj.is_staff:
             return {
                 "program": obj.program,
-                "level": obj.level,
+                "year": obj.year,
                 "school": obj.school
             }
         return None

@@ -3,7 +3,7 @@ from profiles.models import Profile
 
 class StudentSerializer(serializers.Serializer):
     program = serializers.CharField(required=True)
-    level = serializers.CharField(required=True)
+    year = serializers.IntegerField(required=True)
     school = serializers.CharField(required=True)
 
 class StaffSerializer(serializers.Serializer):
@@ -18,11 +18,10 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ['id', 'first_name', 'last_name', 'password', 'is_staff', 'student', 'staff']
+        fields = ['id', 'first_name', 'last_name', 'password', 'email', 'address', 'date_of_birth', 'interests', 'is_staff', 'student', 'staff']
 
     def create(self, validated_data):
         is_staff = validated_data.pop('is_staff', False)
-        
         student_data = validated_data.pop('student', None)
         staff_data = validated_data.pop('staff', None)
 
@@ -35,7 +34,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         if student_data:
             user.program = student_data['program']
-            user.level = student_data['level']
+            user.year = student_data['year']
             user.school = student_data['school']
         if staff_data:
             user.position = staff_data['position']
