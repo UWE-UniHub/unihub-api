@@ -8,12 +8,19 @@ from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
 from profiles.views import get_user_from_request
 from communities.views import check_user_is_admin, check_user_is_community_creator
+from datetime import datetime, timedelta
 
 def check_user_is_event_creator(user, event):
     return event.creator == user
 
+def clean_up_events():
+    Event.objects.filter(date__lt = (datetime.now() - timedelta(days=7)) ).delete()
+
+    
+
 @api_view(['GET'])
 def eventsGet(request):
+    clean_up_events()
     serializer = EventSerializer(Event.objects.all(),many = True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -50,6 +57,7 @@ def eventsProfileIdGetPost(request, id):
     profile = get_object_or_404(Profile, id=id)
 
     if request.method == 'GET':
+        clean_up_events()
         serializer = EventSerializer(Event.objects.filter(creator=profile, community=None), many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -73,6 +81,7 @@ def eventsCommunityIdGetPost(request,id):
 
     community = get_object_or_404(Community, id = id)
     if request.method == 'GET':
+        clean_up_events()
         serializer = EventSerializer(Event.objects.filter(community = community), many = True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
