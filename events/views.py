@@ -20,14 +20,14 @@ def clean_up_events():
 @api_view(['GET'])
 def eventsGet(request):
     clean_up_events()
-    serializer = EventSerializer(Event.objects.all(),many = True)
+    serializer = EventSerializer(Event.objects.all(),many = True, context={'request': request, 'user': request.user})
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET','PATCH','DELETE'])
 def eventsIdGetPatchDelete(request,id):
     event = get_object_or_404(Event,id=id)
     if request.method == 'GET':
-        serializer = EventSerializer(event)
+        serializer = EventSerializer(event, context={'request': request, 'user': request.user})
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     user, error_response = get_user_from_request(request)
@@ -50,7 +50,7 @@ def eventsProfileIdGetPost(request, id):
     profile = get_object_or_404(Profile, id=id)
     if request.method == 'GET':
         clean_up_events()
-        serializer = EventSerializer(Event.objects.filter(creator=profile, community=None), many=True)
+        serializer = EventSerializer(Event.objects.filter(creator=profile, community=None), many=True, context={'request': request, 'user': request.user})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     user, error_response = get_user_from_request(request)
@@ -72,7 +72,7 @@ def eventsCommunityIdGetPost(request,id):
     community = get_object_or_404(Community, id = id)
     if request.method == 'GET':
         clean_up_events()
-        serializer = EventSerializer(Event.objects.filter(community = community), many = True)
+        serializer = EventSerializer(Event.objects.filter(community = community), many = True, context={'request': request, 'user': request.user})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     user, error_response = get_user_from_request(request)
