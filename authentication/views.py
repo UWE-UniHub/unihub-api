@@ -83,14 +83,8 @@ def logout_view(request):
     except Token.DoesNotExist:
         return Response({"error": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
 
-LEVELS = ["Undergraduate", "Postgraduate", "PhD"]
 SCHOOLS = ["Engineering", "Business", "Law", "Medicine"]
 DEPARTMENTS = ["FET - Engineering, Design and Mathematics", "FET - Geography and Environmental Management", "FET - Architecture and the Built Environment", "FET - Computer Science and Creative Technologies"]
-
-@api_view(['GET'])
-@permission_classes([AllowAny])
-def get_levels(request):
-    return Response({"levels": LEVELS}, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 @permission_classes([AllowAny])

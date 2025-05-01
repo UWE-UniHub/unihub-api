@@ -10,14 +10,17 @@ class Profile(AbstractUser):
         unique=True
     )
     bio = models.TextField(blank=True)
-
     username = None
-    email = None
+    email = models.EmailField(blank=True, null=True)
     is_staff = models.BooleanField(default=False)
+    address = models.CharField(max_length=255, blank=True, null=True)
+    date_of_birth = models.DateField(blank=True, null=True)
+    interests = models.TextField(blank=True, help_text="Comma-separated list of interests"
+    )
 
     # student
     program = models.CharField(max_length=255, blank=True, null=True)
-    level = models.CharField(max_length=255, blank=True, null=True)
+    year = models.PositiveIntegerField(blank=True, null=True)
     school = models.CharField(max_length=255, blank=True, null=True)
 
     # staff
@@ -31,7 +34,6 @@ class Profile(AbstractUser):
         related_name='subscribers',
         blank=True
     )
-
     created_at = models.DateTimeField(auto_now_add=True)
 
     USERNAME_FIELD = 'id'
