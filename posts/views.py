@@ -12,8 +12,8 @@ from profiles.views import get_user_from_request, validate_png
 from communities.views import check_user_is_admin, check_user_is_community_creator
 from unihub.settings import POSTS_IMG_DIR
 import os
-from rest_framework.pagination import PageNumberPagination
 from unihub.utils import FreemiumPagination
+from django.db.models import Q
 
 def check_user_can_pD_posts(user,post):
     return post.profile == user if post.profile else check_user_is_admin(user,post.community) or check_user_is_community_creator(user,post.community)
@@ -36,12 +36,12 @@ def postsIdGetPatchDelete(request,id):
         
         if request.method == 'PATCH':
             serializer = PostSerializer(post, data=request.data, partial=True)
-            if serializer.is_valid():
-                serializer.validated_data["event_id"] = request.data["event_id"]
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_200_OK)
-                
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            if not serializer.is_valid():
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            serializer.save()
+
+            rd_serializer = PostSerializer(post, context={'request': request})
+            return Response(rd_serializer.data, status=status.HTTP_200_OK)
 
         post.delete()
         return Response({"message": "Post deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
@@ -52,9 +52,10 @@ def postsProfileIdGetPost(request, id):
     profile = get_object_or_404(Profile, id=id)
 
     if request.method == 'GET':
-        posts = Post.objects.filter(profile=profile).order_by('-created_at')
+        base = Post.objects.filter(profile=profile)
+        qs   = visible_posts_queryset(request, base)
         paginator = FreemiumPagination()
-        paginated_posts = paginator.paginate_queryset(posts, request)
+        paginated_posts = paginator.paginate_queryset(qs, request)
         serializer = PostSerializer(paginated_posts, many=True)
         return paginator.get_paginated_response(serializer.data)
 
@@ -78,9 +79,10 @@ def postsCommunityIdGetPost(request,id):
 
     community = get_object_or_404(Community, id = id)
     if request.method == 'GET':
-        posts = Post.objects.filter(community=community).order_by('-created_at')
+        base = Post.objects.filter(community=community)
+        qs   = visible_posts_queryset(request, base)
         paginator = FreemiumPagination()
-        paginated_posts = paginator.paginate_queryset(posts, request)
+        paginated_posts = paginator.paginate_queryset(qs, request)
         serializer = PostSerializer(paginated_posts, many=True)
         return paginator.get_paginated_response(serializer.data)
 
@@ -158,3 +160,22 @@ def postIdLikesGetPostDelete(request,id):
     
     post.likes.remove(user)
     return Response({"message": "Unliked successfully"}, status=status.HTTP_204_NO_CONTENT)
+
+def visible_posts_queryset(request, base_qs):
+    user, err = get_user_from_request(request)
+    always_visible = base_qs.filter(hidden=False)
+    if err:
+        return always_visible
+
+    subs_profiles    = user.subscriptions.all()
+    subs_communities = Community.objects.filter(subscribers=user)
+
+    hidden_visible = base_qs.filter(
+        hidden=True
+    ).filter(
+        Q(profile=user) |
+        Q(profile__in=subs_profiles) |
+        Q(community__in=subs_communities)
+    )
+
+    return always_visible.union(hidden_visible).order_by('-created_at')

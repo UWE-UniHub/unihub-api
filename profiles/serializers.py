@@ -13,6 +13,14 @@ class ProfileSerializer(serializers.ModelSerializer):
         model = Profile
         fields = ['id', 'first_name', 'last_name', 'email', 'address', 'date_of_birth', 'interests', 'bio', 'is_staff', 'subscribers', 'subscriptions', 'student', 'staff']
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        user = serializers_get_user_from_request(self)
+
+        if not (user and user.is_authenticated and str(user.id) == str(instance.id)):
+            data.pop('address', None)
+        return data
+
     def get_subscribers(self, obj):
         return obj.subscribers.count()
 

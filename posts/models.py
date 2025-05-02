@@ -8,6 +8,8 @@ class Post(models.Model):
     event = models.ForeignKey('events.Event', on_delete=models.SET_NULL, null=True, blank=True)
     profile = models.ForeignKey('profiles.Profile', on_delete=models.CASCADE, null=True, blank=True)
     community = models.ForeignKey('communities.Community', on_delete=models.CASCADE, null=True, blank=True)
+    tags = models.TextField(blank=True, help_text="Comma-separated list of tags")
+    hidden = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
