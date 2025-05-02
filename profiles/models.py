@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 
+from profiles.managers import CustomUserManager
+
 class Profile(AbstractUser):
     id = models.CharField(
         primary_key=True,
@@ -37,6 +39,8 @@ class Profile(AbstractUser):
 
     USERNAME_FIELD = 'id'
     REQUIRED_FIELDS = []
+
+    objects = CustomUserManager() 
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} ({self.email})"
