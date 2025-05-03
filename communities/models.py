@@ -4,6 +4,7 @@ class Community(models.Model):
     id = models.CharField(primary_key=True, max_length=255)
     name = models.CharField(max_length=255)
     bio = models.TextField(null=True, blank=True)
+    tags = models.TextField(blank=True, help_text="Comma-separated list of tags")
     creator = models.ForeignKey('profiles.Profile', on_delete=models.CASCADE, related_name='created_communities')
 
     subscribers = models.ManyToManyField(
