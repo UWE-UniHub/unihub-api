@@ -9,7 +9,7 @@ class CommunitySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Community
-        fields = ['id', 'name', 'bio', 'subscribers']
+        fields = ['id', 'name', 'bio', 'tags', 'subscribers']
         read_only_fields = ['id']
 
     def get_subscribers(self, obj):
@@ -45,5 +45,5 @@ class CommunityDetailSerializer(CommunitySerializer):
 class CommunityPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Community
-        fields = ['id', 'name', 'bio', 'creator_id']
+        fields = ['id', 'name', 'bio', 'tags', 'creator_id']
     
