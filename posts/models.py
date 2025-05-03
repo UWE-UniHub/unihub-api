@@ -19,6 +19,9 @@ class Post(models.Model):
         related_name='like_posts',
         blank=True
     )
+    
+    class Meta:
+        ordering = ['-created_at']
 
     def clean(self):
         if (self.profile is None and self.community is None) or (self.profile is not None and self.community is not None):
