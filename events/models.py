@@ -18,6 +18,8 @@ class Event(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        ordering = ['date']
 
 class EventSubscription(models.Model):
     profile = models.ForeignKey('profiles.Profile', on_delete=models.CASCADE)
