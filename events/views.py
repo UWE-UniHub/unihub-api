@@ -109,7 +109,7 @@ def add_delete_event_sub(request, id):
             host = event.community
         else:
             host = event.creator.first_name
-        msg = f"You have subscribed to {host}'s event on {event.date}. {event.description} We will remind you 24 hours prior to the event!"
+        msg = f"You have subscribed to {host}'s event on {event.date.date()}. {event.description} We will remind you 24 hours prior to the event!"
         reciever = get_object_or_404(Profile,id=user.id)
         send_email(reciever=reciever,subject="You have subscribed to an event", text=msg)
         return Response({"message":"Subscribed to event"}, status=status.HTTP_200_OK)
@@ -119,11 +119,9 @@ def add_delete_event_sub(request, id):
 
 @api_view(['GET'])
 def eventsNotifSend(request):
-    events = Event.objects.filter(date__lte = (datetime.now() + timedelta(days=1,hours=1)))
-    events.filter(date__gte = (datetime.now() + timedelta(days=1)))
+    events = Event.objects.filter(date__lte = (datetime.now() + timedelta(hours=1)))
     for event in events:
-        print(event.description)
         for sub in event.subscribers.all():
             mats = f"And don't forget to bring: {event.required_materials}. " if event.required_materials else ""
-            send_email(reciever=sub,subject="Event notification",text=f"{event.description} is tomorow! Come to {event.location} at {event.date}. {mats}")
+            send_email(reciever=sub,subject="Event notification",text=f"{event.description} is starting soon! Come to {event.location} at {event.date.time().strftime('%H:%M')}. {mats}")
     return Response("OK", status=status.HTTP_200_OK)
