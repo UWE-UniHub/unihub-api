@@ -8,6 +8,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
 from unihub.settings import PROFILE_AVATAR_DIR
+from unihub.utils import send_email
 
 @api_view(['GET', 'PATCH', 'DELETE'])
 def profile_detail(request, id):
@@ -33,6 +34,7 @@ def profile_detail(request, id):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     elif request.method == 'DELETE':
+        send_email(subject="We will miss you!",reciever=profile, text="Your profile was deleted successfully.")
         profile.delete()
         return Response({"message": "Profile deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
 

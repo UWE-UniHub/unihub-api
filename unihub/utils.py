@@ -4,6 +4,9 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
+import sendgrid
+from sendgrid.helpers.mail import Mail
+from unihub.settings import SENDGRID_KEY
 
 class FreemiumPagination(PageNumberPagination):
     default_limit = 30
@@ -54,3 +57,15 @@ def get_user_from_request(request):
         return user, None
     except Token.DoesNotExist:
         return None, Response({"error": "Invalid token"}, status=status.HTTP_401_UNAUTHORIZED)
+    
+def send_email(reciever,subject="Opps",text="Looks like we have messed up"):
+    if reciever.email:
+        sg = sendgrid.SendGridAPIClient(api_key=SENDGRID_KEY)
+        mail = Mail(
+            from_email='uwe@dyzoon.dev',
+            to_emails=reciever.email,
+            subject=subject,
+            plain_text_content=text
+        )
+        sg.send(mail)
+        
