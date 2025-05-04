@@ -12,7 +12,9 @@ class StaffSerializer(serializers.Serializer):
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=6)
-    
+    date_of_birth = serializers.DateField(
+        input_formats=['%Y-%m-%d', '%Y-%m-%dT%H:%M:%S.%fZ']
+    )
     student = StudentSerializer(required=False)
     staff = StaffSerializer(required=False)
 
