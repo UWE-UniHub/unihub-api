@@ -1,10 +1,7 @@
-from django.db.models import Q
 from posts.models import Post
-from communities.models import Community
 from posts.serializers import PostSerializer
 from rest_framework.decorators import api_view
 from posts.views import visible_posts_queryset
-from profiles.views import get_user_from_request
 from unihub.utils import FreemiumPagination
 
 @api_view(['GET'])

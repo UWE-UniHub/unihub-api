@@ -30,15 +30,13 @@ def validate_png(file_bytes):
     
 def serializers_get_user_from_request(self):
     request = self.context.get('request')
-
     if not request:
         return None
     
     token = request.COOKIES.get('token')
-
+    
     if not token:
         return None
-
     try:
         return Token.objects.get(key=token).user
     except Token.DoesNotExist:
