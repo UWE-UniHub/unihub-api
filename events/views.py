@@ -118,7 +118,7 @@ def add_delete_event_sub(request, id):
         return Response({"message":"Unsubscribed from event"}, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-def eventsNotifSend(request):
+def events_send_notif(request):
     events = Event.objects.filter(date__lte = (datetime.now() + timedelta(hours=1)))
     for event in events:
         for sub in event.subscribers.all():
