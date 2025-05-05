@@ -1,8 +1,8 @@
 from django.urls import path
-from .views import postsIdGetPatchDelete, postIdImgGetPutDelete, postIdLikesGetPostDelete
+from .views import get_edit_delete_posts, get_put_delete_post_img, get_post_delete_post_likes
 
 urlpatterns = [
-    path('/<str:id>', postsIdGetPatchDelete, name='postsIdGetPatchDelete'),
-    path('/<str:id>/img', postIdImgGetPutDelete, name='postIdImgGetPutDelete'),
-    path('/<str:id>/likes', postIdLikesGetPostDelete, name='postIdLikesGetPostDelete'),
+    path('/<str:id>', get_edit_delete_posts, name='get_edit_delete_posts'),
+    path('/<str:id>/img', get_put_delete_post_img, name='get_put_delete_post_img'),
+    path('/<str:id>/likes', get_post_delete_post_likes, name='get_post_delete_post_likes'),
 ]

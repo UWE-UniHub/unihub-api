@@ -19,7 +19,7 @@ def check_user_is_community_creator(user, community):
     return community.creator == user
 
 @api_view(['GET','POST'])
-def communitiesGetPost(request):   
+def get_add_communities(request):   
 
     user, error_response = get_user_from_request(request)
 
@@ -44,7 +44,7 @@ def communitiesGetPost(request):
         return  Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET','PATCH','DELETE'])
-def communitiesGetPatchDelete(request,id):
+def get_edit_delete_communities(request,id):
     community = get_object_or_404(Community, id = id)
     if request.method =='GET':
         serializer = CommunityDetailSerializer(community, context={'request': request, 'user': request.user})
