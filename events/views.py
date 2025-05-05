@@ -9,15 +9,14 @@ from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
 from profiles.views import get_user_from_request
 from communities.views import check_user_is_admin, check_user_is_community_creator
-from datetime import datetime, timedelta
 from unihub.utils import send_email
+from django.utils import timezone
 
 def check_user_is_event_creator(user, event):
     return event.creator == user
 
 def clean_up_events():
-    Event.objects.filter(date__lt = (datetime.now() - timedelta(days=7)) ).delete()
-
+    Event.objects.filter(date__lt=timezone.now()).delete()
 @api_view(['GET'])
 def get_events(request):
     clean_up_events()
