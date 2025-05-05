@@ -109,7 +109,7 @@ def add_delete_event_sub(request, id):
             host = event.community
         else:
             host = event.creator.first_name
-        msg = f"You have subscribed to {host}'s event on {event.date.date()}. {event.description} We will remind you 24 hours prior to the event!"
+        msg = f"You have subscribed to {host}'s event on {event.date.date()}. {event.description}. We will remind you 1 hour before the event starts!"
         reciever = get_object_or_404(Profile,id=user.id)
         send_email(reciever=reciever,subject="You have subscribed to an event", text=msg)
         return Response({"message":"Subscribed to event"}, status=status.HTTP_200_OK)
