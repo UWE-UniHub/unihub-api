@@ -64,8 +64,8 @@ INSTALLED_APPS = [
     'events',
     'posts',
     'profiles',
+    'feed',
     'comments',
-    'unihub_app',
 ]
 
 AUTH_USER_MODEL = 'profiles.Profile'

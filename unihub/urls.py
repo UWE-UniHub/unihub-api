@@ -26,7 +26,8 @@ urlpatterns = [
     path('communities', include('communities.urls')),
     path('events',include('events.urls')),
     path('posts',include('posts.urls')),
-    path('', include('unihub_app.urls')),
+    path('', include('feed.urls')),
+    path('search/', include('search.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
