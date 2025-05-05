@@ -2,6 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Q
+from posts.views import visible_posts_queryset
 from profiles.models import Profile
 from communities.models import Community
 from posts.models import Post
@@ -36,10 +37,12 @@ def search(request):
         Q(tags__icontains=q)
     ).distinct()[:5]
 
-    posts_qs = Post.objects.filter(
+    posts = Post.objects.filter(
         Q(content__icontains=q) |
         Q(tags__icontains=q)
-    ).distinct()[:5]
+    )
+    visible_posts = visible_posts_queryset(request, posts)
+    posts_qs = visible_posts[:5]
 
     events_qs = Event.objects.filter(
         Q(description__icontains=q) |

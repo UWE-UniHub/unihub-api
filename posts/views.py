@@ -20,8 +20,9 @@ def check_user_can_pD_posts(user,post):
 
 @api_view(['GET','PATCH','DELETE'])
 def get_edit_delete_posts(request,id):
-
-    post = get_object_or_404(Post,id=id)
+    base = Post.objects.filter(id=id)
+    qs = visible_posts_queryset(request, base)
+    post = get_object_or_404(qs, id=id)
 
     if request.method == 'GET':
         serializer = PostSerializer(post,context={'request': request})
@@ -53,7 +54,7 @@ def get_add_profile_posts(request, id):
 
     if request.method == 'GET':
         base = Post.objects.filter(profile=profile)
-        qs   = visible_posts_queryset(request, base)
+        qs = visible_posts_queryset(request, base)
         paginator = FreemiumPagination()
         paginated_posts = paginator.paginate_queryset(qs, request)
         serializer = PostSerializer(paginated_posts, many=True)
@@ -103,7 +104,10 @@ def get_add_community_posts(request,id):
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def get_put_delete_post_img(request, id):
-    post = get_object_or_404(Post, id=id)
+    base = Post.objects.filter(id=id)
+    qs = visible_posts_queryset(request, base)
+    post = get_object_or_404(qs, id=id)
+
     img_path = os.path.join(POSTS_IMG_DIR, f"{id}.png")
 
     if request.method == 'GET':
@@ -141,8 +145,9 @@ def get_put_delete_post_img(request, id):
 
 @api_view(['GET','POST','DELETE'])
 def get_post_delete_post_likes(request,id):
-    
-    post = get_object_or_404(Post, id=id)
+    base = Post.objects.filter(id=id)
+    qs = visible_posts_queryset(request, base)
+    post = get_object_or_404(qs, id=id)
     
     if request.method == 'GET':
         likes = post.likes.all()
