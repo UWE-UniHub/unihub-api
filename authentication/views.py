@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny
 from .serializers import RegisterSerializer
 from profiles.serializers import ProfileSerializer
+from unihub.utils import send_email
 
 @api_view(['GET'])
 def auth_check(request):
@@ -57,6 +58,7 @@ def signup_view(request):
 
     if serializer.is_valid():
         user = serializer.save()
+        send_email(subject="Welcome to UniHub!",reciever=user, text="You have successfully registered.")
         return Response({"message": "User registered successfully"}, status=status.HTTP_201_CREATED)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

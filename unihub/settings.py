@@ -27,6 +27,8 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 SECRET_KEY = env('SECRET_KEY')
 
+SENDGRID_KEY = env('SENDGRID_KEY')
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -63,6 +65,7 @@ INSTALLED_APPS = [
     'posts',
     'profiles',
     'feed',
+    'comments',
 ]
 
 AUTH_USER_MODEL = 'profiles.Profile'
@@ -176,4 +179,4 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-SILENCED_SYSTEM_CHECKS = ['admin.E039']
+SILENCED_SYSTEM_CHECKS = ['admin.E039','admin.E040']
