@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404
 from profiles.views import get_user_from_request
 from communities.views import check_user_is_admin, check_user_is_community_creator
 from datetime import datetime, timedelta
+from unihub.utils import send_email
 
 def check_user_is_event_creator(user, event):
     return event.creator == user
@@ -104,7 +105,23 @@ def add_delete_event_sub(request, id):
     
     if request.method == 'POST':
         event.subscribers.add(user)
+        if event.community:
+            host = event.community
+        else:
+            host = event.creator.first_name
+        msg = f"You have subscribed to {host}'s event on {event.date.date()}. {event.description}. We will remind you 1 hour before the event starts!"
+        reciever = get_object_or_404(Profile,id=user.id)
+        send_email(reciever=reciever,subject="You have subscribed to an event", text=msg)
         return Response({"message":"Subscribed to event"}, status=status.HTTP_200_OK)
     else:
         event.subscribers.remove(user)
         return Response({"message":"Unsubscribed from event"}, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def events_send_notif(request):
+    events = Event.objects.filter(date__lte = (datetime.now() + timedelta(hours=1)))
+    for event in events:
+        for sub in event.subscribers.all():
+            mats = f"And don't forget to bring: {event.required_materials}. " if event.required_materials else ""
+            send_email(reciever=sub,subject="Event notification",text=f"{event.description} is starting soon! Come to {event.location} at {event.date.time().strftime('%H:%M')}. {mats}")
+    return Response("OK", status=status.HTTP_200_OK)
