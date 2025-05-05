@@ -19,7 +19,7 @@ def check_user_can_pD_posts(user,post):
     return post.profile == user if post.profile else check_user_is_admin(user,post.community) or check_user_is_community_creator(user,post.community)
 
 @api_view(['GET','PATCH','DELETE'])
-def postsIdGetPatchDelete(request,id):
+def get_edit_delete_posts(request,id):
 
     post = get_object_or_404(Post,id=id)
 
@@ -48,7 +48,7 @@ def postsIdGetPatchDelete(request,id):
     return Response({"error": "You are not allowed to perform this action."}, status=status.HTTP_403_FORBIDDEN)
 
 @api_view(['GET','POST'])
-def postsProfileIdGetPost(request, id):
+def get_add_profile_posts(request, id):
     profile = get_object_or_404(Profile, id=id)
 
     if request.method == 'GET':
@@ -75,7 +75,7 @@ def postsProfileIdGetPost(request, id):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET','POST'])
-def postsCommunityIdGetPost(request,id):
+def get_add_community_posts(request,id):
 
     community = get_object_or_404(Community, id = id)
     if request.method == 'GET':
@@ -102,7 +102,7 @@ def postsCommunityIdGetPost(request,id):
     return Response({"error": "You are not allowed to perform this action."}, status=status.HTTP_403_FORBIDDEN)
 
 @api_view(['GET', 'PUT', 'DELETE'])
-def postIdImgGetPutDelete(request, id):
+def get_put_delete_post_img(request, id):
     post = get_object_or_404(Post, id=id)
     img_path = os.path.join(POSTS_IMG_DIR, f"{id}.png")
 
@@ -140,7 +140,7 @@ def postIdImgGetPutDelete(request, id):
     return Response({"error": "You are not allowed to perform this action."}, status=status.HTTP_403_FORBIDDEN)
 
 @api_view(['GET','POST','DELETE'])
-def postIdLikesGetPostDelete(request,id):
+def get_post_delete_post_likes(request,id):
     
     post = get_object_or_404(Post, id=id)
     

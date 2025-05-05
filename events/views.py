@@ -19,13 +19,13 @@ def clean_up_events():
     Event.objects.filter(date__lt = (datetime.now() - timedelta(days=7)) ).delete()
 
 @api_view(['GET'])
-def eventsGet(request):
+def get_events(request):
     clean_up_events()
     serializer = EventSerializer(Event.objects.all(),many = True, context={'request': request, 'user': request.user})
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET','PATCH','DELETE'])
-def eventsIdGetPatchDelete(request,id):
+def get_edit_delete_events(request,id):
     event = get_object_or_404(Event,id=id)
     if request.method == 'GET':
         serializer = EventSerializer(event, context={'request': request, 'user': request.user})
@@ -47,7 +47,7 @@ def eventsIdGetPatchDelete(request,id):
     return Response({"error": "You are not allowed to perform this action."}, status=status.HTTP_403_FORBIDDEN)
 
 @api_view(['GET','POST'])
-def eventsProfileIdGetPost(request, id):
+def get_add_profile_events(request, id):
     profile = get_object_or_404(Profile, id=id)
     if request.method == 'GET':
         clean_up_events()
@@ -69,7 +69,7 @@ def eventsProfileIdGetPost(request, id):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET','POST'])
-def eventsCommunityIdGetPost(request,id):
+def get_add_community_events(request,id):
     community = get_object_or_404(Community, id = id)
     if request.method == 'GET':
         clean_up_events()
