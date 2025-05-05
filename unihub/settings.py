@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'events',
     'posts',
     'profiles',
+    'comments',
     'unihub_app',
 ]
 
