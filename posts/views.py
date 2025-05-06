@@ -168,19 +168,17 @@ def get_post_delete_post_likes(request,id):
 
 def visible_posts_queryset(request, base_qs):
     user, err = get_user_from_request(request)
-    always_visible = base_qs.filter(hidden=False)
     if err:
-        return always_visible
+        return base_qs.filter(hidden=False).order_by('-created_at')
 
     subs_profiles    = user.subscriptions.all()
     subs_communities = Community.objects.filter(subscribers=user)
 
-    hidden_visible = base_qs.filter(
-        hidden=True
-    ).filter(
-        Q(profile=user) |
-        Q(profile__in=subs_profiles) |
-        Q(community__in=subs_communities)
-    )
-
-    return always_visible.union(hidden_visible).order_by('-created_at')
+    return base_qs.filter(
+        Q(hidden=False) |
+        (Q(hidden=True) & (
+            Q(profile=user) |
+            Q(profile__in=subs_profiles) |
+            Q(community__in=subs_communities)
+        ))
+    ).order_by('-created_at')
