@@ -1,7 +1,7 @@
 from communities.models import Community
 from profiles.models import Profile
 from profiles.serializers import ProfileSerializer
-from .models import Event
+from .models import Event, EventSubscription
 from .serializers import EventPostSerializer, EventSerializer
 from rest_framework.response import Response
 from rest_framework import status
@@ -11,6 +11,7 @@ from profiles.views import get_user_from_request
 from communities.views import check_user_is_admin, check_user_is_community_creator
 from unihub.utils import send_email
 from django.utils import timezone
+from datetime import timedelta
 
 def check_user_is_event_creator(user, event):
     return event.creator == user
@@ -119,9 +120,27 @@ def add_delete_event_sub(request, id):
 
 @api_view(['GET'])
 def events_send_notif(request):
-    events = Event.objects.filter(date__lte = (datetime.now() + timedelta(hours=1)))
-    for event in events:
-        for sub in event.subscribers.all():
-            mats = f"And don't forget to bring: {event.required_materials}. " if event.required_materials else ""
-            send_email(reciever=sub,subject="Event notification",text=f"{event.description} is starting soon! Come to {event.location} at {event.date.time().strftime('%H:%M')}. {mats}")
+    now = timezone.now()
+    upcoming = EventSubscription.objects.select_related('event','profile').filter(
+        notified=False,
+        event__date__gte=now + timedelta(minutes=55),
+        event__date__lte=now + timedelta(minutes=65),
+    )
+    for sub in upcoming:
+        event   = sub.event
+        profile = sub.profile
+        mats = (
+            f"And don't forget to bring: {event.required_materials}. "
+            if event.required_materials else ""
+        )
+        send_email(
+            reciever=profile,
+            subject="Event notification",
+            text=(
+                f"{event.description} is starting soon! "
+                f"Come to {event.location} at {event.date.time().strftime('%H:%M')}. {mats}"
+            )
+        )
+        sub.notified = True
+        sub.save(update_fields=['notified'])
     return Response("OK", status=status.HTTP_200_OK)
