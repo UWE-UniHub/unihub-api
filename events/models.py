@@ -24,6 +24,7 @@ class Event(models.Model):
 class EventSubscription(models.Model):
     profile = models.ForeignKey('profiles.Profile', on_delete=models.CASCADE)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    notified = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('profile', 'event')
