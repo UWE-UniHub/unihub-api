@@ -16,9 +16,10 @@ def post_comments(request, id):
 
     if request.method == 'GET':
         qs = post.comments.all().order_by('created_at')
-        page = FreemiumPagination().paginate_queryset(qs, request)
+        paginator = FreemiumPagination()
+        page = paginator.paginate_queryset(qs, request)
         serializer = CommentSerializer(page, many=True, context={'request': request})
-        return FreemiumPagination().get_paginated_response(serializer.data)
+        return paginator.get_paginated_response(serializer.data)
 
     user, err = get_user_from_request(request)
     if err:
