@@ -17,6 +17,7 @@ def check_user_is_event_creator(user, event):
 
 def clean_up_events():
     Event.objects.filter(date__lt=timezone.now()).delete()
+    
 @api_view(['GET'])
 def get_events(request):
     clean_up_events()
