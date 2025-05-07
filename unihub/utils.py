@@ -72,3 +72,6 @@ def send_email(reciever,subject="Opps",text="Looks like we have messed up"):
         )
         sg.send(mail)
         
+def check_user_can_pD_posts(user,post):
+    from communities.views import check_user_is_admin, check_user_is_community_creator
+    return post.profile == user if post.profile else check_user_is_admin(user,post.community) or check_user_is_community_creator(user,post.community)

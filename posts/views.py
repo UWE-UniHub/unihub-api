@@ -12,11 +12,8 @@ from profiles.views import get_user_from_request, validate_png
 from communities.views import check_user_is_admin, check_user_is_community_creator
 from unihub.settings import POSTS_IMG_DIR
 import os
-from unihub.utils import FreemiumPagination
+from unihub.utils import FreemiumPagination, check_user_can_pD_posts
 from django.db.models import Q
-
-def check_user_can_pD_posts(user,post):
-    return post.profile == user if post.profile else check_user_is_admin(user,post.community) or check_user_is_community_creator(user,post.community)
 
 @api_view(['GET','PATCH','DELETE'])
 def get_edit_delete_posts(request,id):
