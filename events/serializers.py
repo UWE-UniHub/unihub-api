@@ -10,11 +10,12 @@ class EventSerializer(serializers.ModelSerializer):
     profile = serializers.SerializerMethodField(read_only = True)
     subscribers_count = serializers.SerializerMethodField(read_only=True)
     is_subscribed = serializers.SerializerMethodField(read_only=True)
+    is_deletable = serializers.SerializerMethodField()
 
     class Meta:
         model = Event
-        fields = ['id', 'description', 'location', 'created_at', 'date', 'profile', 'community', 'required_materials', 'max_capacity', 'subscribers_count', 'is_subscribed']
-        read_only_fields = ['id', 'created_at', 'community', 'profile', 'subscribers_count', 'is_subscribed']
+        fields = ['id', 'description', 'location', 'created_at', 'date', 'profile', 'community', 'required_materials', 'max_capacity', 'subscribers_count', 'is_subscribed', 'is_deletable']
+        read_only_fields = ['id', 'created_at', 'community', 'profile', 'subscribers_count', 'is_subscribed', 'is_deletable']
     
     def get_profile(self,obj):
         if obj.community:
@@ -29,7 +30,21 @@ class EventSerializer(serializers.ModelSerializer):
         if not user or not user.is_authenticated:
             return False
         return obj.subscribers.filter(id=user.id).exists()
+    
+    def get_is_deletable(self, obj):
+        user = serializers_get_user_from_request(self)
+        if not user or not user.is_authenticated:
+            return False
 
+        if obj.creator_id == user.id and obj.community is None:
+            return True
+
+        if obj.community:
+            if obj.community.creator_id == user.id:
+                return True
+            if obj.community.admins.filter(id=user.id).exists():
+                return True
+        return False
 
 class EventPostSerializer(serializers.ModelSerializer):
     class Meta:
