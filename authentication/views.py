@@ -12,19 +12,16 @@ from unihub.utils import send_email
 @api_view(['GET'])
 def auth_check(request):
     token = request.COOKIES.get("token")
-
     if not token:
             token = request.headers.get("token")
-            
     if not token:
         return Response({"error": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
-
     try:
         user = Token.objects.get(key=token).user
     except Token.DoesNotExist:
         return Response({"error": "Invalid token"}, status=status.HTTP_401_UNAUTHORIZED)
-
-    serializer = ProfileSerializer(user)
+    
+    serializer = ProfileSerializer(user, context={'request': request})
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
