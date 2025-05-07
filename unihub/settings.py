@@ -41,7 +41,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 PROFILE_AVATAR_DIR = os.path.join(MEDIA_ROOT, 'profiles')
 COMMUNITY_AVATAR_DIR = os.path.join(MEDIA_ROOT, 'communities')
 POSTS_IMG_DIR = os.path.join(MEDIA_ROOT, 'posts')
-
+SENDGRID_EMAIL = env('SENDGRID_EMAIL')
 
 os.makedirs(PROFILE_AVATAR_DIR, exist_ok=True)
 os.makedirs(COMMUNITY_AVATAR_DIR, exist_ok=True)
