@@ -57,7 +57,7 @@ def get_add_profile_posts(request, id):
         qs = visible_posts_queryset(request, base)
         paginator = FreemiumPagination()
         paginated_posts = paginator.paginate_queryset(qs, request)
-        serializer = PostSerializer(paginated_posts, many=True)
+        serializer = PostSerializer(paginated_posts, many=True, context={'request': request})
         return paginator.get_paginated_response(serializer.data)
 
     user, error_response = get_user_from_request(request)
@@ -84,7 +84,7 @@ def get_add_community_posts(request,id):
         qs   = visible_posts_queryset(request, base)
         paginator = FreemiumPagination()
         paginated_posts = paginator.paginate_queryset(qs, request)
-        serializer = PostSerializer(paginated_posts, many=True)
+        serializer = PostSerializer(paginated_posts, many=True, context={'request': request})
         return paginator.get_paginated_response(serializer.data)
 
     user, error_response = get_user_from_request(request)
