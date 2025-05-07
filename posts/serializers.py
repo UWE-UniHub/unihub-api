@@ -1,10 +1,9 @@
 from rest_framework import serializers
-from posts.views import check_user_can_pD_posts
 from .models import Post
 from communities.serializers import CommunitySerializer
 from profiles.serializers import ProfileSerializer
 from events.serializers import EventSerializer
-from unihub.utils import serializers_get_user_from_request
+from unihub.utils import check_user_can_pD_posts, serializers_get_user_from_request
 
 class PostSerializer(serializers.ModelSerializer):
     id = serializers.CharField(read_only=True)
