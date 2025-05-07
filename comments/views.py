@@ -9,10 +9,10 @@ from .serializers import CommentSerializer, CommentCreateSerializer
 from posts.views import check_user_can_pD_posts, visible_posts_queryset
 
 @api_view(['GET', 'POST'])
-def post_comments(request, id):
-    base = Post.objects.filter(id=id)
+def post_comments(request, post_id):
+    base = Post.objects.filter(id=post_id)
     qs = visible_posts_queryset(request, base)
-    post = get_object_or_404(qs, id=id)
+    post = get_object_or_404(qs, id=post_id)
 
     if request.method == 'GET':
         qs = post.comments.all().order_by('created_at')
@@ -34,12 +34,12 @@ def post_comments(request, id):
 
 
 @api_view(['GET', 'PATCH', 'DELETE'])
-def comment_detail(request, comment_id):
-    base = Post.objects.filter(id=id)
+def comment_detail(request, post_id, comment_id):
+    base = Post.objects.filter(id=post_id)
     qs = visible_posts_queryset(request, base)
-    _ = get_object_or_404(qs, id=id)
+    _ = get_object_or_404(qs, id=post_id)
 
-    comment = get_object_or_404(Comment, id=comment_id, post__id=id)
+    comment = get_object_or_404(Comment, id=comment_id, post__id=post_id)
 
     if request.method == 'GET':
         serializer = CommentSerializer(comment, context={'request': request})
