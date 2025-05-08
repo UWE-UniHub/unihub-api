@@ -155,7 +155,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ALLOWED_HOSTS = [
     'uwe.dyzoon.dev',
     '127.0.0.1',
-    'localhost:5173'
+    'localhost:5173',
+    'unihub-backend'
 ]
 
 # Internationalization
