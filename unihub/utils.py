@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 import sendgrid
 from sendgrid.helpers.mail import Mail, From
+from unihub import settings
 from unihub.settings import SENDGRID_KEY
 
 class FreemiumPagination(PageNumberPagination):
@@ -60,7 +61,7 @@ def send_email(reciever,subject="Opps",text="Looks like we have messed up"):
     if reciever.email:
         sg = sendgrid.SendGridAPIClient(api_key=SENDGRID_KEY)
         mail = Mail(
-            from_email= From('uwe@dyzoon.dev','UniHub'),
+            from_email= From(settings.SENDGRID_EMAIL,'UniHub'),
             to_emails=reciever.email,
             subject=subject,
             html_content=f"""
